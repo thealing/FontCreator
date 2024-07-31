@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <windows.h>
-#include <olectl.h>
+#include <wincodec.h>
 
 int main() {
 	char font[128];
@@ -32,20 +32,35 @@ int main() {
 		RECT rc = { i * width, 0, (i + 1) * width, height };
 		DrawText(hdc, &string[i], 1, &rc, DT_CENTER | DT_VCENTER);
 	}
-	PICTDESC pd = {};
-	pd.cbSizeofstruct = sizeof(pd);
-	pd.picType = PICTYPE_BITMAP;
-	pd.bmp.hbitmap = hbm;
-	IPicture* picture;
-	OleCreatePictureIndirect(&pd, IID_IPicture, FALSE, (void**)&picture);
-	IPictureDisp* disp;
-	picture->QueryInterface(IID_IPictureDisp, (void**)&disp);
-	int result = OleSavePictureFile(disp, SysAllocString(L"out.bmp"));
-	if (result == S_OK) {
-		printf("done\n");
+	BITMAP bm;
+	GetObject(hbm, sizeof(bm), &bm);
+	int pixel_count = bm.bmWidth * bm.bmHeight;
+	void* pixels = malloc(pixel_count * 4);
+	GetBitmapBits(hbm, pixel_count * 4, pixels);
+	for (int i = 0; i < pixel_count; i++) {
+		BYTE* pixel = (BYTE*)pixels + i * 4;
+		pixel[3] = *(DWORD*)pixel ? 255 : 0;
 	}
-	else {
-		printf("error %i\n", result);
-	}
+	SetBitmapBits(hbm, pixel_count * 4, pixels);
+	CoInitialize(nullptr);
+	IWICImagingFactory* factory;
+	CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (void**)&factory);
+	IWICBitmap* bitmap;
+	factory->CreateBitmapFromHBITMAP(hbm, nullptr, WICBitmapUseAlpha, &bitmap);
+	IWICStream* stream;
+	factory->CreateStream(&stream);
+	stream->InitializeFromFilename(L"out.png", GENERIC_WRITE);
+	IWICBitmapEncoder* encoder;
+	factory->CreateEncoder(GUID_ContainerFormatPng, nullptr, &encoder);
+	encoder->Initialize(stream, WICBitmapEncoderNoCache);
+	IWICBitmapFrameEncode* frame;
+	encoder->CreateNewFrame(&frame, nullptr);
+	frame->Initialize(nullptr);
+	frame->SetSize(bm.bmWidth, bm.bmHeight);
+	WICPixelFormatGUID format = GUID_WICPixelFormat32bppBGRA;
+	frame->SetPixelFormat(&format);
+	frame->WriteSource(bitmap, nullptr);
+	frame->Commit();
+	encoder->Commit();
 	return 0;
 }

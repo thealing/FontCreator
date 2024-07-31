@@ -39,7 +39,11 @@ int main() {
 	GetBitmapBits(hbm, pixel_count * 4, pixels);
 	for (int i = 0; i < pixel_count; i++) {
 		BYTE* pixel = (BYTE*)pixels + i * 4;
-		pixel[3] = *(DWORD*)pixel ? 255 : 0;
+		for (int j = 0; j <= 2; j++) {
+			if (pixel[j] > pixel[3]) {
+				pixel[3] = pixel[j];
+			}
+		}
 	}
 	SetBitmapBits(hbm, pixel_count * 4, pixels);
 	CoInitialize(nullptr);

@@ -7,15 +7,15 @@ int main() {
 	int size = 0;
 	int width = 0;
 	int height = 0;
-	char programName[MAX_PATH] = {};
-	GetModuleFileName(NULL, programName, MAX_PATH);
-	char* extension = strrchr(programName, '.');
+	char program_path[MAX_PATH] = {};
+	GetModuleFileName(NULL, program_path, MAX_PATH);
+	char* extension = strrchr(program_path, '.');
 	if (extension != NULL) {
 		*extension = 0;
 	}
-	char configPath[MAX_PATH] = {};
-	sprintf(configPath, "%s.cfg", programName);
-	FILE* cfg = fopen(configPath, "r");
+	char config_path[MAX_PATH] = {};
+	sprintf(config_path, "%s.cfg", program_path);
+	FILE* cfg = fopen(config_path, "r");
 	if (cfg == NULL) {
 		return 1;
 	}

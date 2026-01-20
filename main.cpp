@@ -3,13 +3,24 @@
 #include <wincodec.h>
 
 int main() {
-	char font[128];
-	int size;
-	int width;
-	int height;
-	FILE* cfg = fopen("font.cfg", "r");
-	fgets(font, 128, cfg);
-	font[strlen(font) - 1] = '\0';
+	char font[100] = {};
+	int size = 0;
+	int width = 0;
+	int height = 0;
+	char programName[MAX_PATH] = {};
+	GetModuleFileName(NULL, programName, MAX_PATH);
+	char* extension = strrchr(programName, '.');
+	if (extension != NULL) {
+		*extension = 0;
+	}
+	char configPath[MAX_PATH] = {};
+	sprintf(configPath, "%s.cfg", programName);
+	FILE* cfg = fopen(configPath, "r");
+	if (cfg == NULL) {
+		return 1;
+	}
+	fgets(font, 99, cfg);
+	font[strlen(font) - 1] = 0;
 	fscanf(cfg, "%i %i %i", &size, &width, &height);
 	printf("FONT:    %s\n", font);
 	printf("SIZE:    %i\n", size);

@@ -5,5 +5,5 @@ This is a tool that generates a compressed .png image containing all printable g
 ## Parameters
 - Font name
 - Font size
-- Glyph width
 - Glyph height
+- Glyph width

@@ -5,8 +5,8 @@
 int main() {
 	char font[100] = {};
 	int size = 0;
-	int width = 0;
 	int height = 0;
+	int width = 0;
 	char program_path[MAX_PATH] = {};
 	GetModuleFileName(NULL, program_path, MAX_PATH);
 	char* extension = strrchr(program_path, '.');
@@ -21,11 +21,11 @@ int main() {
 	}
 	fgets(font, 99, cfg);
 	font[strlen(font) - 1] = 0;
-	fscanf(cfg, "%i %i %i", &size, &width, &height);
+	fscanf(cfg, "%i %i %i", &size, &height, &width);
 	printf("FONT:    %s\n", font);
 	printf("SIZE:    %i\n", size);
-	printf("WIDTH:   %i\n", width);
 	printf("HEIGHT:  %i\n", height);
+	printf("WIDTH:   %i\n", width);
 	HWND hwnd_screen = GetDesktopWindow();
 	HDC hdc_screen = GetDC(hwnd_screen);
 	HDC hdc = CreateCompatibleDC(hdc_screen);

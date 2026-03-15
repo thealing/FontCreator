@@ -1,6 +1,6 @@
 # Font Creator
 
-A program that generates a compressed .png image containing all printable glyphs of a given monospace font. The parameters are read from the sidecar configuration file.
+A program that generates a compressed .png image containing all printable glyphs of the given monospace font. The parameters are read from the sidecar configuration file.
 
 ## Parameters
 - Font name
